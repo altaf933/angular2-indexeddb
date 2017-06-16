@@ -104,6 +104,7 @@ export class AngularIndexedDB {
 
     add(storeName: string, value: any, key?: any) {
         let self = this;
+        let id=this;
         let promise = new Promise<any>((resolve, reject)=> {
             self.dbWrapper.validateBeforeTransaction(storeName, reject);
 
@@ -113,12 +114,16 @@ export class AngularIndexedDB {
                         reject(e);
                     },
                     complete: (e: Event) => {
-                        resolve({ key: key, value: value });
+                        console.log("Event in oncomplete");
+                        resolve({ key: key, value: value,id:id });
                     }
                 }),
                 objectStore = transaction.objectStore(storeName);
 
-            objectStore.add(value, key);
+            var res = objectStore.add(value, key);
+            res.onsuccess = function(e:any){
+                id=e.target.result;
+             }
         });
 
         return promise;
